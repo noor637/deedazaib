@@ -1,8 +1,8 @@
 /* ==========================================================================
    DEEDAZAIB — website behaviour
    You shouldn't need to edit this file: content lives in js/config.js.
-   Sections: 1 helpers · 2 WhatsApp links · 3 the book · 4 scroll glide
-             5 lookbook grid · 6 product view
+   Sections: 1 helpers · 2 WhatsApp links · 3 the gold thread
+             4 lookbook grid · 5 product view
    ========================================================================== */
 (function () {
   'use strict';
@@ -26,11 +26,6 @@
   }
   function orn(color) {
     return '<div style="color:' + color + '"><div class="orn" aria-hidden="true"><i></i><b></b><i></i></div></div>';
-  }
-  function mono(rel, dColor, zColor) {
-    return '<div class="mono" aria-hidden="true" style="width:calc(var(--pw) * ' + rel + ');height:calc(var(--pw) * ' + rel + ');color:' + zColor + '">' +
-      '<span><span class="d" style="font-size:calc(var(--pw) * ' + (rel * 0.36) + ');color:' + dColor + '">D</span>' +
-      '<span class="z" lang="ur" style="font-size:calc(var(--pw) * ' + (rel * 0.27) + ');top:calc(var(--pw) * ' + (rel * 0.07) + ')">ز</span></span></div>';
   }
   /* placeholder outfit illustration, used until a look has a real photo */
   function dress(l, dark) {
@@ -77,9 +72,13 @@
   document.querySelectorAll('[data-wa]').forEach(function (a) { a.href = waLink(a.getAttribute('data-wa')); });
   if (C.instagram) $('instagram').href = C.instagram; else $('instagram').style.display = 'none';
   $('year').textContent = new Date().getFullYear();
+  if (C.earlyDaysPhoto) { $('early').innerHTML = '<img src="' + esc(C.earlyDaysPhoto) + '" alt="The early days of Deedazaib">'; $('early').hidden = false; }
 
-  /* ---------- 3 · the book: cover · endpaper · title · story spread · back cover ---------- */
-  // the book is decoration: if it can't be built, the rest of the site still works
+  /* ---------- 3 · the gold thread ----------
+     A single gold thread stitches down the page as you scroll:
+     it embroiders a paisley in the hoop (intro), runs through the story timeline,
+     slips under the lookbook like a needle under fabric, and ties off into the
+     D ز monogram in About. Pure decoration: if anything fails, the site still works. */
   var frame = function () {};
   function viewport() {
     var d = document.documentElement;
@@ -88,137 +87,178 @@
       h: window.innerHeight || d.clientHeight || (window.screen && screen.height) || 768
     };
   }
-  try {
-  var pages = [];
-  function add(cls, inner, density) { pages.push({ cls: cls, inner: inner, density: density || 'soft' }); }
-  function folio(i) { return '<div class="folio">' + i + '</div>'; }
-
-  add('cover front', '<div class="frame"></div><div class="cover-inner foil">' + mono(0.27, '#F3E6CC', '#D4B271') +
-    '<div style="display:flex;flex-direction:column;align-items:center;gap:.4em"><span class="cin" style="font-size:calc(var(--pw) * .062);letter-spacing:.3em">DEEDAZAIB</span><span class="cin" style="font-size:calc(var(--pw) * .022);letter-spacing:.5em">BY BEENISH</span></div>' +
-    orn('#D4B271') + '<span class="cin" style="font-size:calc(var(--pw) * .027);letter-spacing:.34em">THE LOOKBOOK</span><span style="font-size:calc(var(--pw) * .024);letter-spacing:.28em">MMXXVI</span></div>', 'hard');
-  add('endpaper left', '<div class="pattern"></div>');
-  add('right', '<div class="pg center" style="gap:1.1em">' +
-    '<div style="display:flex;align-items:center;gap:.4em;line-height:1"><span class="cin" style="font-size:calc(var(--pw) * .075);letter-spacing:.14em">DEEDA</span><span class="ur" lang="ur" dir="rtl" style="font-size:calc(var(--pw) * .093);color:#B08A4A">زیب</span></div>' +
-    '<span class="cin" style="font-size:calc(var(--pw) * .022);letter-spacing:.5em">BY BEENISH</span>' + orn('#B08A4A') +
-    '<span class="serif-i" style="font-size:calc(var(--pw) * .05);color:var(--sub)">The Lookbook · 2026</span></div>');
-  add('left', '<div class="pg" style="gap:1.1em;justify-content:center"><span class="running">HOW WE STARTED</span>' +
-    '<span class="cin" style="font-size:calc(var(--pw) * .06);letter-spacing:.06em">Hi, I’m Beenish.</span>' + orn('#B08A4A') +
-    '<p class="p-text">For as long as I can remember, I’ve loved designing: sketching outfits, playing with colours, imagining how a fabric would fall.</p>' +
-    '<p class="p-text">I’ve always been an entrepreneur at heart, and Deedazaib grew one step at a time, right from my home.</p></div>' + folio(3));
-  var early = C.earlyDaysPhoto
-    ? '<div class="mini-photo has-photo"><img src="' + esc(C.earlyDaysPhoto) + '" alt="The early days of Deedazaib"></div>'
-    : '';
-  add('right', '<div class="pg" style="gap:1.2em;justify-content:center">' + early +
-    '<div class="timeline"><div><b>Shawl exhibitions</b><span>Where it all began</span></div><div><b>Unstitched suits</b><span>Our first collections</span></div><div><b>Ready-to-wear · 2022</b><span>Designed by me, made in Islamabad</span></div></div>' +
-    '<p class="p-text">My first customers were friends and family. They told their friends, and slowly a whole family of clients grew around us.</p></div>' + folio(4));
-  add('cover back', '<div class="frame"></div><div class="cover-inner foil">' + mono(0.16, '#F3E6CC', '#D4B271') + '<span class="cin" style="font-size:calc(var(--pw) * .022);letter-spacing:.4em">DESIGNED IN ISLAMABAD</span></div>', 'hard');
-
-  var vp = viewport(), vw = vp.w, vh = vp.h;
-  var mobile = vw < 760;
-  var PW = Math.max(180, Math.round(mobile ? Math.min(vw * 0.84, vh * 0.56 * 0.733, 420) : Math.min(vh * 0.62 * 0.733, vw * 0.4, 460)));
-  var PH = Math.round(PW / 0.733);
-  var bookW = mobile ? PW : PW * 2;
-  var book = $('book'), mover = $('mover');
-  mover.style.width = bookW + 'px'; mover.style.height = PH + 'px';
-  book.style.width = bookW + 'px'; book.style.height = PH + 'px';
-  mover.style.setProperty('--pw', PW + 'px');
-  pages.forEach(function (p) {
-    var el = document.createElement('div');
-    el.className = 'page ' + p.cls; el.setAttribute('data-density', p.density); el.innerHTML = p.inner;
-    book.appendChild(el);
-  });
-  var pf = new St.PageFlip(book, {
-    width: PW, height: PH, size: 'fixed', showCover: true, usePortrait: true, autoSize: false,
-    mobileScrollSupport: true, maxShadowOpacity: 0.45, flippingTime: REDUCED ? 1 : 900, drawShadow: true, showPageCorners: false
-  });
-  pf.loadFromHTML(book.querySelectorAll('.page'));
-  /* the book is for show: visitors can't drag its pages */
-  ['pointerdown', 'mousedown', 'touchstart'].forEach(function (ev) {
-    mover.addEventListener(ev, function (e) { e.stopPropagation(); }, { capture: true, passive: true });
-  });
-  mover.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); }, true);
-
-  /* ---------- 4 · the book glides with the scroll ---------- */
   var secs = [].slice.call(document.querySelectorAll('section[data-sec]'));
-  var TARGET = [0, 3, 0, 0];   // intro: closed · story: open at the story spread · lookbook: closed (hidden) · about: closed
-  function states() {           // where the visible book's centre sits in each section, and its scale
-    var headH = 60, cyOpen = headH + (vh - headH) * 0.52;
-    if (mobile) return [
-      { cx: vw / 2, cy: vh * 0.73, s: 0.62 },
-      { cx: vw / 2, cy: cyOpen, s: 1 },
-      { cx: vw / 2, cy: cyOpen - vh, s: 0.9 },
-      { cx: vw / 2, cy: vh * 0.78, s: 0.42 }
-    ];
-    return [
-      { cx: vw * 0.72, cy: headH + (vh - headH) * 0.5, s: 0.9 },
-      { cx: vw / 2, cy: cyOpen, s: 1 },
-      { cx: vw / 2, cy: cyOpen - vh, s: 0.9 },
-      { cx: vw * 0.3, cy: headH + (vh - headH) * 0.5, s: 0.9 }
-    ];
+  var activeSec = -1;
+  function markMenu() {
+    var y = window.scrollY + viewport().h * 0.45, sec = 0;
+    secs.forEach(function (s, k) { if (y >= s.offsetTop) sec = k; });
+    if (sec !== activeSec) {
+      activeSec = sec;
+      document.querySelectorAll('.menu a').forEach(function (a) { a.classList.toggle('on', +a.getAttribute('data-sec') === sec); });
+    }
   }
-  var S = states();
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
-  function visibleOffset() {   // closed book shows only the right half of the spread
-    if (mobile) return 0;
-    var i = pf.getCurrentPageIndex();
-    if (i === 0) return PW / 2;
-    if (i >= pf.getPageCount() - 1) return -PW / 2;
-    return 0;
-  }
-  var activeSec = -1, ticking = false, pending = null;
-  frame = function () {
-    ticking = false;
-    var y = window.scrollY;
-    var tops = secs.map(function (s) { return s.offsetTop; });
-    var i = 0; while (i < tops.length - 1 && y >= tops[i + 1]) i++;
-    var frac = i < tops.length - 1 ? Math.min(1, Math.max(0, (y - tops[i]) / (tops[i + 1] - tops[i]))) : 0;
-    var e = ease(frac), a = S[i], b = S[Math.min(i + 1, S.length - 1)];
-    var cx = lerp(a.cx, b.cx, e), cy = lerp(a.cy, b.cy, e), s = lerp(a.s, b.s, e);
-    var lift = REDUCED ? 0 : Math.sin(Math.PI * frac);
-    s *= 1 - 0.12 * lift;
-    var lastEnd = tops[tops.length - 1] + secs[secs.length - 1].offsetHeight - vh;
-    var drift = Math.max(0, y - lastEnd);           // after About, the book scrolls away with the page
-    mover.style.transform = 'translate(' + (cx - bookW / 2 - visibleOffset()) + 'px,' + (cy - PH / 2 - drift) + 'px) perspective(1600px) rotateX(' + (6 * lift) + 'deg) scale(' + s + ')';
-    var op = 1;                                     // fade out over the lookbook, back in for About
-    if (i === 1) op = 1 - Math.min(1, Math.max(0, (frac - 0.05) / 0.3));
-    else if (i === 2) op = frac < 0.9 ? 0 : (frac - 0.9) / 0.1;
-    mover.style.opacity = op.toFixed(3);
-    mover.style.pointerEvents = op < 0.5 ? 'none' : '';
-    var sec = frac > 0.55 ? Math.min(i + 1, secs.length - 1) : i;
-    if (sec !== activeSec) { activeSec = sec; onSection(sec); }
-  };
-  function want(sec) {
-    var cur = pf.getCurrentPageIndex(), t = TARGET[sec];
-    if (t === 0) return cur === 0 ? null : 0;
-    if (mobile) return cur === t ? null : t;
-    return (cur === t || cur === t + 1) ? null : t;
-  }
-  function onSection(sec) {
-    document.querySelectorAll('.menu a').forEach(function (a) { a.classList.toggle('on', +a.getAttribute('data-sec') === sec); });
-    pending = sec; tryFlip();
-  }
-  function tryFlip() {
-    if (pending === null) return;
-    if (pf.getState && pf.getState() !== 'read') { setTimeout(tryFlip, 120); return; }
-    var w = want(pending); pending = null;
-    if (w !== null) pf.flip(w);
-  }
-  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
-  pf.on('flip', frame);
-  pf.on('changeState', frame);
-  window.addEventListener('resize', function () {
-    var n = viewport();
-    if (Math.abs(n.w - vw) > 80 || (n.w < 760) !== mobile) { location.reload(); return; }
-    vw = n.w; vh = n.h; S = states(); frame();
-  });
+  try {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = $('thread'), main = svg.parentNode;
+    var mask = $('threadMaskPath'), line = $('threadLine'), shade = $('threadShade'), needle = $('needle');
+    var knot = $('knot');
+    var total = 0, marks = [], L0 = 0, built = false;
+    var startT = null, LOAD_MS = REDUCED ? 1 : 2600;
+
+    function box(el) {                                   // element box in <main> coordinates
+      var r = el.getBoundingClientRect(), m = main.getBoundingClientRect();
+      return { x: r.left - m.left, y: r.top - m.top, w: r.width, h: r.height, cx: r.left - m.left + r.width / 2, cy: r.top - m.top + r.height / 2 };
+    }
+    function f(n) { return Math.round(n * 10) / 10; }
+
+    function build() {
+      var vp = viewport(), vw = vp.w, vh = vp.h, mobile = vw < 760;
+      var W = main.offsetWidth, H = main.offsetHeight;
+      svg.setAttribute('width', W); svg.setAttribute('height', H);
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+      var d = '', px = 0, py = 0, len = 0;
+      var meter = document.createElementNS(NS, 'path');
+      svg.appendChild(meter);
+      marks = [];
+      function seg(cmd, x, y) {                          // add one command, keep the running length
+        meter.setAttribute('d', 'M' + f(px) + ' ' + f(py) + cmd);
+        len += meter.getTotalLength();
+        d += cmd; px = x; py = y;
+      }
+      function C(x1, y1, x2, y2, x, y) { seg('C' + f(x1) + ' ' + f(y1) + ' ' + f(x2) + ' ' + f(y2) + ' ' + f(x) + ' ' + f(y), x, y); }
+      function A(r, x, y, sweep) { seg('A' + f(r) + ' ' + f(r) + ' 0 0 ' + (sweep ? 1 : 0) + ' ' + f(x) + ' ' + f(y), x, y); }
+      function mark(y) { marks.push({ len: len, y: y }); }
+      function through(pts) {                            // smooth curve through points (Catmull-Rom)
+        var all = [{ x: px, y: py - 40 }, { x: px, y: py }].concat(pts);
+        all.push({ x: pts[pts.length - 1].x, y: pts[pts.length - 1].y + 40 });
+        for (var i = 1; i < all.length - 2; i++) {
+          var p0 = all[i - 1], p1 = all[i], p2 = all[i + 1], p3 = all[i + 2];
+          C(p1.x + (p2.x - p0.x) / 6, p1.y + (p2.y - p0.y) / 6, p2.x - (p3.x - p1.x) / 6, p2.y - (p3.y - p1.y) / 6, p2.x, p2.y);
+        }
+      }
+      function loop(cx, cy, r) {                         // a small stitched loop around a point, entered from the top
+        A(r, cx, cy + r, 1); A(r, cx, cy - r, 1); A(r, cx + r * 0.2, cy + r, 1);
+      }
+
+      /* 1 · the paisley in the hoop */
+      var hb = box($('hoop')), R = hb.w / 2 * 0.78, hx = hb.cx, hy = hb.cy;
+      function P(u, v) { return [hx + u * R, hy + v * R]; }
+      function pc(a, b, c) { var p1 = P(a[0], a[1]), p2 = P(b[0], b[1]), p3 = P(c[0], c[1]); C(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]); }
+      var s = P(0.30, -0.80); px = s[0]; py = s[1]; d = 'M' + f(px) + ' ' + f(py);
+      pc([0.78, -0.62], [0.78, 0.40], [0.05, 0.62]);     // outer paisley
+      pc([-0.52, 0.78], [-0.86, 0.18], [-0.48, -0.22]);
+      pc([-0.22, -0.52], [0.06, -0.50], [0.30, -0.80]);
+      pc([0.40, -0.93], [0.16, -1.0], [0.10, -0.84]);    // the curl
+      pc([0.06, -0.72], [0.22, -0.66], [0.24, -0.76]);
+      pc([0.16, -0.50], [0.44, -0.30], [0.36, 0.14]);    // inner echo
+      pc([0.30, 0.42], [-0.10, 0.48], [-0.30, 0.30]);
+      pc([-0.52, 0.08], [-0.40, -0.18], [-0.18, -0.28]);
+      pc([0.02, -0.36], [0.16, -0.14], [0.04, 0.02]);    // centre bud
+      pc([-0.08, 0.14], [-0.22, 0.04], [-0.12, -0.08]);
+      pc([-0.02, -0.18], [0.10, 0.10], [0.00, 0.28]);
+      pc([-0.10, 0.60], [0.02, 0.98], [0.00, 1.28]);     // out through the bottom of the hoop
+      L0 = len; mark(-1);
+
+      /* 2 · down into the story and through the timeline */
+      var head = box($('story').querySelector('.head h2'));
+      var dots = [].slice.call(document.querySelectorAll('#story .t-dot')).map(box);
+      var story = box($('story'));
+      var r = 9;
+      if (mobile) {
+        var mx = 10;
+        through([{ x: mx + 14, y: story.y + 10 }, { x: mx, y: head.y + head.h + 30 }, { x: mx, y: dots[0].cy - r - 60 }, { x: dots[0].cx, y: dots[0].cy - r }]);
+      } else {
+        through([{ x: Math.max(head.x + head.w + 60, px - 30), y: head.cy }, { x: dots[0].cx + 30, y: (head.cy + dots[0].cy) / 2 }, { x: dots[0].cx, y: dots[0].cy - r }]);
+      }
+      mark(dots[0].cy);
+      dots.forEach(function (b, k) {
+        loop(b.cx, b.cy, r);
+        if (dots[k + 1]) { var n = dots[k + 1]; C(px - 18, py + (n.cy - b.cy) * 0.35, n.cx + 18, n.cy - r - (n.cy - b.cy) * 0.35, n.cx, n.cy - r); }
+        mark(b.cy + r);
+      });
+
+      /* 3 · under the lookbook, like a needle passing under fabric */
+      var cat = box($('catalogue'));
+      var cx0 = mobile ? vw * 0.5 : vw * 0.5;
+      through([{ x: (px + cx0) / 2 + (mobile ? 20 : -40), y: (py + cat.y) / 2 + 30 }, { x: cx0, y: cat.y + 30 }]);
+      mark(cat.y);
+
+      /* 4 · up through About and tied off into the monogram */
+      var kb = box(knot), KR = kb.w / 2, kx = kb.cx, ky = kb.cy;
+      var about = box($('about'));
+      C(cx0, cat.y + cat.h * 0.6, kx, about.y - 160, kx, ky - KR);
+      mark(ky - KR - vh * 0.08);
+      A(KR, kx, ky + KR, 1); A(KR, kx, ky - KR, 1);      // outer ring
+      var ir = KR * 0.86;
+      C(kx + KR * 0.06, ky - KR + 2, kx + KR * 0.06, ky - ir - 2, kx, ky - ir);
+      A(ir, kx, ky + ir, 0); A(ir, kx, ky - ir, 0);      // inner ring, the other way round
+      C(kx - 8, ky - ir - 10, kx - 18, ky - KR - 14, kx - 26, ky - KR - 26);   // the tail of the knot
+      mark(Infinity);
+
+      svg.removeChild(meter);
+      total = len;
+      [mask, line, shade].forEach(function (p) { p.setAttribute('d', d); });
+      line.setAttribute('data-len', total);
+      built = true;
+    }
+
+    function drawnLength() {
+      var vh = viewport().h, maxS = Math.max(1, document.documentElement.scrollHeight - vh);
+      var y = window.scrollY, t = startT === null ? 0 : Math.min(1, (performance.now() - startT) / LOAD_MS);
+      if (REDUCED) return total;
+      var ease = 1 - Math.pow(1 - t, 3);
+      var intro = L0 * ease;
+      // scroll position at which the needle reaches each mark
+      var at = marks.map(function (m) { return m.y === -1 ? 0 : (m.y === Infinity ? maxS : Math.min(maxS - 1, m.y - vh * 0.62)); });
+      for (var k = 1; k < at.length; k++) if (at[k] <= at[k - 1]) at[k] = at[k - 1] + 0.5;
+      var L = L0;
+      for (k = 1; k < marks.length; k++) {
+        if (y <= at[k]) { L = marks[k - 1].len + (marks[k].len - marks[k - 1].len) * Math.max(0, (y - at[k - 1]) / (at[k] - at[k - 1])); break; }
+        L = marks[k].len;
+      }
+      if (y > 0 && t < 1) intro = L0;                     // scrolling straight away finishes the paisley
+      return Math.max(Math.min(intro, L0), y > 0 ? L : 0) || 0;
+    }
+
+    var ticking = false;
+    frame = function () {
+      ticking = false;
+      markMenu();
+      if (!built) return;
+      var L = Math.min(total, drawnLength());
+      mask.style.strokeDasharray = f(L) + ' ' + f(total + 10);
+      var done = L >= total - 1;
+      knot.classList.toggle('tied', done);
+      if (L < 1 || done) { needle.style.opacity = '0'; }
+      else {
+        var p = line.getPointAtLength(L), q = line.getPointAtLength(Math.max(0, L - 3));
+        var a = Math.atan2(p.y - q.y, p.x - q.x) * 180 / Math.PI;
+        needle.setAttribute('transform', 'translate(' + f(p.x) + ' ' + f(p.y) + ') rotate(' + f(a) + ')');
+        needle.style.opacity = '1';
+      }
+      if (startT !== null && performance.now() - startT < LOAD_MS + 50) { ticking = true; requestAnimationFrame(frame); }
+    };
+    function req() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
+
+    var rebuildTimer = null;
+    function rebuild() { clearTimeout(rebuildTimer); rebuildTimer = setTimeout(function () { build(); req(); }, 120); }
+    build();
+    startT = performance.now();
+    window.addEventListener('scroll', req, { passive: true });
+    window.addEventListener('resize', rebuild);
+    window.addEventListener('load', rebuild);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(rebuild);
+    if ('ResizeObserver' in window) new ResizeObserver(rebuild).observe(main);
   } catch (err) {
-    if (window.console) console.error('Deedazaib book could not start:', err);
-    $('bookLayer').style.display = 'none';
-    frame = function () {};
+    if (window.console) console.error('Deedazaib thread could not start:', err);
+    var th = $('thread'); if (th) th.style.display = 'none';
+    var kn = $('knot'); if (kn) kn.classList.add('tied');
+    frame = markMenu;
+    window.addEventListener('scroll', function () { requestAnimationFrame(markMenu); }, { passive: true });
   }
 
-  /* ---------- 5 · the lookbook grid ---------- */
+  /* ---------- 4 · the lookbook grid ---------- */
   var grid = $('grid');
   LOOKS.forEach(function (l, k) {
     var b = document.createElement('button');
@@ -247,7 +287,7 @@
     });
   });
 
-  /* ---------- 6 · product view ---------- */
+  /* ---------- 5 · product view ---------- */
   var pv = $('pv'), pvPhoto = $('pvPhoto'), cur = 0, size = 'M', lastTile = null;
   function setText(id, v) { $(id).textContent = v || ''; }
   function setPV(k) {

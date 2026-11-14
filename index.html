@@ -32,6 +32,18 @@
 
   <div id="home">
     <main>
+      <!-- the gold thread, drawn by js/main.js -->
+      <svg id="thread" aria-hidden="true" focusable="false">
+        <defs><mask id="threadMask" maskUnits="userSpaceOnUse"><path id="threadMaskPath" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:0 1"/></mask></defs>
+        <g mask="url(#threadMask)">
+          <path id="threadShade" fill="none" stroke="rgba(42,9,18,.18)" stroke-width="2.4" stroke-linecap="round" transform="translate(0.8 1.2)" stroke-dasharray="7 4"/>
+          <path id="threadLine" fill="none" stroke="#B8914F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 4"/>
+        </g>
+        <g id="needle" style="opacity:0">
+          <path d="M2 0 L-30 -1.6 L-34 0 L-30 1.6 Z" fill="#D8D2C8" stroke="#8C8478" stroke-width=".6"/>
+          <ellipse cx="-29" cy="0" rx="2.6" ry=".7" fill="#5C5248"/>
+        </g>
+      </svg>
       <!-- 1 · INTRO -->
       <section id="intro" data-sec="0">
         <div class="intro-text">
@@ -44,13 +56,31 @@
             <a class="btn solid" href="#catalogue">See the lookbook</a>
             <a class="btn line" data-wa="Hi Deedazaib! I would like to order." href="#" target="_blank" rel="noopener">Order on WhatsApp</a>
           </div>
-          <div class="scroll-cue" aria-hidden="true"><span></span>SCROLL — THE BOOK WILL OPEN</div>
+          <div class="scroll-cue" aria-hidden="true"><span></span>SCROLL — FOLLOW THE THREAD</div>
         </div>
+        <div class="hoop-wrap" aria-hidden="true"><div class="hoop" id="hoop"><i class="clasp"></i></div></div>
       </section>
 
-      <!-- 2 · HOW WE STARTED (the story itself is printed inside the book, see js/main.js) -->
+      <!-- 2 · HOW WE STARTED -->
       <section id="story" data-sec="1">
         <div class="head"><span class="kicker">CHAPTER ZERO</span><h2>HOW WE STARTED</h2></div>
+        <div class="story-grid">
+          <div class="story-text">
+            <span class="hi">Hi, I’m Beenish.</span>
+            <div style="color:#B08A4A"><div class="orn" aria-hidden="true"><i></i><b></b><i></i></div></div>
+            <p>For as long as I can remember, I’ve loved designing: sketching outfits, playing with colours, imagining how a fabric would fall.</p>
+            <p>I’ve always been an entrepreneur at heart, and Deedazaib grew one step at a time, right from my home.</p>
+            <p>My first customers were friends and family. They told their friends, and slowly a whole family of clients grew around us.</p>
+          </div>
+          <div class="story-time">
+            <div class="early" id="early" hidden></div>
+            <ol class="timeline">
+              <li><i class="t-dot"></i><b>Shawl exhibitions</b><span>Where it all began</span></li>
+              <li><i class="t-dot"></i><b>Unstitched suits</b><span>Our first collections</span></li>
+              <li><i class="t-dot"></i><b>Ready-to-wear · 2022</b><span>Designed by me, made in Islamabad</span></li>
+            </ol>
+          </div>
+        </div>
       </section>
 
       <!-- 3 · THE LOOKBOOK (looks come from js/config.js) -->
@@ -73,6 +103,7 @@
 
       <!-- 4 · ABOUT US -->
       <section id="about" data-sec="3">
+        <div class="knot" id="knot" aria-hidden="true"><span class="d">D</span><span class="z" lang="ur">ز</span></div>
         <div class="about-text">
           <span class="kicker">DEEDAZAIB BY BEENISH</span>
           <h2>ABOUT US</h2>
@@ -89,8 +120,6 @@
     </main>
     <footer class="foot">© <span id="year">2026</span> DEEDAZAIB BY BEENISH · ISLAMABAD</footer>
 
-    <!-- the travelling book -->
-    <div id="bookLayer"><div id="mover"><div id="book" aria-label="The Deedazaib book"></div></div></div>
   </div>
 
   <!-- PRODUCT VIEW (opens when a look is tapped) -->
@@ -124,7 +153,6 @@
     </div>
   </div>
 
-  <script src="js/vendor/page-flip.browser.js"></script>
   <script src="js/config.js"></script>
   <script src="js/main.js"></script>
 </body>

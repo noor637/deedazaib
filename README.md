@@ -1,7 +1,7 @@
 # Deedazaib by Beenish — website
 
 A one-page website for **Deedazaib by Beenish**:
-intro → *How we started* (a book that opens as you scroll) → the **Lookbook** grid → *About us*.
+intro → *How we started* (a gold thread stitches down the page as you scroll and ties off into the monogram) → the **Lookbook** grid → *About us*.
 Every order goes through WhatsApp; there is no cart or online payment.
 
 No build tools are needed: it is plain HTML, CSS and JavaScript, ready for **GitHub Pages**.
@@ -14,8 +14,7 @@ No build tools are needed: it is plain HTML, CSS and JavaScript, ready for **Git
 index.html                 the page itself (intro, About text, product popup)
 css/style.css              all the styling (colours, fonts, layout)
 js/config.js               ← YOUR SETTINGS: WhatsApp number, Instagram, every look
-js/main.js                 the behaviour (book, scrolling, lookbook, product popup)
-js/vendor/page-flip…js     the page-turning library (MIT licence, included)
+js/main.js                 the behaviour (gold thread, lookbook, product popup)
 images/favicon.svg         the browser-tab icon (D ز monogram)
 images/looks/              put your outfit photos here
 .nojekyll                  tells GitHub Pages to serve the files as they are
@@ -98,9 +97,9 @@ Each look is one block in the `looks: [ … ]` list:
 
 ### Other text
 - **Intro and About us** wording → `index.html` (search for the text you want to change).
-- **The story inside the book** ("Hi, I'm Beenish…", the timeline) → `js/main.js`, section *3 · the book*.
+- **The story** ("Hi, I'm Beenish…", the timeline) → `index.html`, section *2 · HOW WE STARTED*.
 - **Delivery note** in every product → `delivery:` in `js/config.js`.
-- **"The early days" photo** in the book → upload it to `images/` and set `earlyDaysPhoto:` in `js/config.js`.
+- **"The early days" photo** in the story → upload it to `images/` and set `earlyDaysPhoto:` in `js/config.js`.
 
 ---
 
@@ -109,7 +108,7 @@ Double-click `index.html` to open it in your browser. Everything works offline e
 fonts, which load from Google Fonts when you're online.
 
 ## Good to know
-- Works on phones, tablets and desktops. On phones the book shows one page at a time.
+- Works on phones, tablets and desktops.
 - Visitors who turn on "reduce motion" on their device get the page without the gliding animations.
 - Credits: page turning by [StPageFlip](https://github.com/Nodlik/StPageFlip) (MIT licence, see `js/vendor/`);
   fonts Cinzel, Jost, Gulzar and Cormorant Garamond from Google Fonts (Open Font License).
