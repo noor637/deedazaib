@@ -79,6 +79,16 @@
   $('year').textContent = new Date().getFullYear();
 
   /* ---------- 3 · the book: cover · endpaper · title · story spread · back cover ---------- */
+  // the book is decoration: if it can't be built, the rest of the site still works
+  var frame = function () {};
+  function viewport() {
+    var d = document.documentElement;
+    return {
+      w: window.innerWidth || d.clientWidth || (window.screen && screen.width) || 1024,
+      h: window.innerHeight || d.clientHeight || (window.screen && screen.height) || 768
+    };
+  }
+  try {
   var pages = [];
   function add(cls, inner, density) { pages.push({ cls: cls, inner: inner, density: density || 'soft' }); }
   function folio(i) { return '<div class="folio">' + i + '</div>'; }
@@ -103,9 +113,9 @@
     '<p class="p-text">My first customers were friends and family. They told their friends, and slowly a whole family of clients grew around us.</p></div>' + folio(4));
   add('cover back', '<div class="frame"></div><div class="cover-inner foil">' + mono(0.16, '#F3E6CC', '#D4B271') + '<span class="cin" style="font-size:calc(var(--pw) * .022);letter-spacing:.4em">DESIGNED IN ISLAMABAD</span></div>', 'hard');
 
-  var vw = window.innerWidth, vh = window.innerHeight;
+  var vp = viewport(), vw = vp.w, vh = vp.h;
   var mobile = vw < 760;
-  var PW = Math.round(mobile ? Math.min(vw * 0.84, vh * 0.56 * 0.733, 420) : Math.min(vh * 0.62 * 0.733, vw * 0.4, 460));
+  var PW = Math.max(180, Math.round(mobile ? Math.min(vw * 0.84, vh * 0.56 * 0.733, 420) : Math.min(vh * 0.62 * 0.733, vw * 0.4, 460)));
   var PH = Math.round(PW / 0.733);
   var bookW = mobile ? PW : PW * 2;
   var book = $('book'), mover = $('mover');
@@ -157,7 +167,7 @@
     return 0;
   }
   var activeSec = -1, ticking = false, pending = null;
-  function frame() {
+  frame = function () {
     ticking = false;
     var y = window.scrollY;
     var tops = secs.map(function (s) { return s.offsetTop; });
@@ -177,7 +187,7 @@
     mover.style.pointerEvents = op < 0.5 ? 'none' : '';
     var sec = frac > 0.55 ? Math.min(i + 1, secs.length - 1) : i;
     if (sec !== activeSec) { activeSec = sec; onSection(sec); }
-  }
+  };
   function want(sec) {
     var cur = pf.getCurrentPageIndex(), t = TARGET[sec];
     if (t === 0) return cur === 0 ? null : 0;
@@ -198,9 +208,15 @@
   pf.on('flip', frame);
   pf.on('changeState', frame);
   window.addEventListener('resize', function () {
-    if (Math.abs(window.innerWidth - vw) > 80 || (window.innerWidth < 760) !== mobile) { location.reload(); return; }
-    vw = window.innerWidth; vh = window.innerHeight; S = states(); frame();
+    var n = viewport();
+    if (Math.abs(n.w - vw) > 80 || (n.w < 760) !== mobile) { location.reload(); return; }
+    vw = n.w; vh = n.h; S = states(); frame();
   });
+  } catch (err) {
+    if (window.console) console.error('Deedazaib book could not start:', err);
+    $('bookLayer').style.display = 'none';
+    frame = function () {};
+  }
 
   /* ---------- 5 · the lookbook grid ---------- */
   var grid = $('grid');
