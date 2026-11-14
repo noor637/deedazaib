@@ -228,13 +228,6 @@ section > *{position:relative; z-index:3}
 }
 
 
-/* the hoop monogram fades in once the rings are stitched, like the one in About */
-.hoop .d{font-family:Cinzel,serif; font-weight:500; font-size:calc(var(--hs) * .29); color:var(--maroon); position:relative; z-index:2}
-.hoop .z{font-family:Gulzar,serif; font-size:calc(var(--hs) * .22); color:#B08A4A; position:relative; z-index:2; top:calc(var(--hs) * .056)}
-.hoop .d,.hoop .z{opacity:0; transform:scale(.86); filter:blur(4px); transition:opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1), filter 1.1s ease}
-.hoop .z{transition-delay:.25s}
-.hoop.tied .d,.hoop.tied .z{opacity:1; transform:none; filter:none}
-@media (prefers-reduced-motion: reduce){ .hoop .d,.hoop .z{transition:none} }
 
 
 /* ---------- lookbook tiles: open button + favourite heart ---------- */
@@ -267,3 +260,7 @@ body.pv-open .favbar{display:none}
 @keyframes hintOut{to{opacity:0}}
 @media (max-width:860px){ .zoom-hint{bottom:auto; top:14px} }
 @media (prefers-reduced-motion: reduce){ .fav[aria-pressed="true"] svg,.pv-save[aria-pressed="true"] svg,.favbar{animation:none} .slide img{transition:none} }
+
+/* the stitched lotus: its petals fill with a soft blush once the outline is done */
+#hoopFill{opacity:0; transition:opacity 1.4s ease}
+#thread.lotus-done #hoopFill{opacity:.45}

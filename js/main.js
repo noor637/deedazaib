@@ -76,7 +76,7 @@
 
   /* ---------- 3 · the gold thread ----------
      A single gold thread stitches down the page as you scroll:
-     it embroiders the D ز monogram in the hoop (intro), runs through the story timeline,
+     it embroiders a lotus in the hoop (intro), runs through the story timeline,
      slips under the lookbook like a needle under fabric, and ties off into the
      D ز monogram in About. Pure decoration: if anything fails, the site still works. */
   var frame = function () {};
@@ -149,17 +149,35 @@
         A(r, cx, cy + r, 1); A(r, cx, cy - r, 1); A(r, cx + r * 0.2, cy + r, 1);
       }
 
-      /* 1 · the monogram in the hoop: the thread stitches the double ring, then D ز fades in (as in About) */
-      var hb = box($('hoop')), hr = hb.w / 2, rr = hr * 0.8, R = rr * 1.3, hx = hb.cx, hy = hb.cy;
+      /* 1 · a lotus stitched in the hoop: petal by petal, then the bowl, then down the stem */
+      var hb = box($('hoop')), hr = hb.w / 2, R = hr * 0.66, hx = hb.cx, hy = hb.cy - hr * 0.08;
       function P(u, v) { return [hx + u * R, hy + v * R]; }
-      px = hx; py = hy - rr; d = 'M' + f(px) + ' ' + f(py); dv = d;
-      A(rr, hx, hy + rr, 1); A(rr, hx, hy - rr, 1);                     // outer ring
-      var ri = rr * 0.9;
-      C(hx + 6, hy - rr + 2, hx + 6, hy - ri - 2, hx, hy - ri);
-      A(ri, hx, hy + ri, 0); A(ri, hx, hy - ri, 0);                     // inner ring, the other way round
-      LR = len;                                                         // rings done: the letters appear
-      jump(hx, hy + ri);                                                // back down to the ring
-      C(hx, hy + ri + 10, hx, hy + hr * 0.95, hx, hy + hr * 1.02);   // out through the bottom of the hoop
+      var B = P(0, 0.42), fill = '';
+      px = B[0]; py = B[1]; d = 'M' + f(px) + ' ' + f(py); dv = d;
+      function petal(tu, tv, w) {                // out from the base to the tip and back again
+        var T = P(tu, tv), ax = T[0] - B[0], ay = T[1] - B[1], al = Math.hypot(ax, ay);
+        var nx = -ay / al * w * R, ny = ax / al * w * R;
+        var a1 = [B[0] + ax * 0.25 - nx, B[1] + ay * 0.25 - ny], a2 = [T[0] - ax * 0.30 - nx * 0.75, T[1] - ay * 0.30 - ny * 0.75];
+        var b1 = [T[0] - ax * 0.30 + nx * 0.75, T[1] - ay * 0.30 + ny * 0.75], b2 = [B[0] + ax * 0.25 + nx, B[1] + ay * 0.25 + ny];
+        C(a1[0], a1[1], a2[0], a2[1], T[0], T[1]);
+        C(b1[0], b1[1], b2[0], b2[1], B[0], B[1]);
+        fill += 'M' + f(B[0]) + ' ' + f(B[1]) + 'C' + [a1, a2, T, b1, b2, B].map(function (q) { return f(q[0]) + ' ' + f(q[1]); }).join(' ') + 'Z';
+      }
+      petal(-0.92, -0.02, 0.24);                // outer left
+      petal(-0.62, -0.42, 0.26);                 // inner left
+      petal(0, -0.86, 0.30);                     // centre
+      petal(0.62, -0.42, 0.26);                  // inner right
+      petal(0.92, -0.02, 0.24);                 // outer right
+      var L1 = P(-0.78, 0.40), R1 = P(0.78, 0.40), D1 = P(-0.45, 0.78), D2 = P(0.45, 0.78);
+      C(B[0] - R * 0.3, B[1] + R * 0.02, L1[0] + R * 0.2, L1[1] - R * 0.02, L1[0], L1[1]);   // the bowl beneath the petals
+      C(D1[0], D1[1], D2[0], D2[1], R1[0], R1[1]);
+      C(R1[0] - R * 0.2, R1[1] - R * 0.02, B[0] + R * 0.3, B[1] + R * 0.02, B[0], B[1]);
+      fill += 'M' + f(B[0]) + ' ' + f(B[1]) + 'C' + [[B[0] - R * 0.3, B[1] + R * 0.02], [L1[0] + R * 0.2, L1[1] - R * 0.02], L1, D1, D2, R1, [R1[0] - R * 0.2, R1[1] - R * 0.02], [B[0] + R * 0.3, B[1] + R * 0.02], B].map(function (q) { return f(q[0]) + ' ' + f(q[1]); }).join(' ') + 'Z';
+      $('hoopFill').setAttribute('d', fill);
+      LR = len;                                  // the flower is done: its petals fill in
+      var S1 = P(0, 0.70);
+      jump(S1[0], S1[1]);                        // the stem starts under the bowl
+      C(hx + R * 0.10, S1[1] + R * 0.25, hx - R * 0.08, hb.cy + hr * 0.75, hx, hb.cy + hr * 1.02);   // down the stem and out of the hoop
       L0 = len; mark(-1);
 
       /* 2 · down into the story and through the timeline */
@@ -233,7 +251,7 @@
       mask.style.strokeDasharray = f(L) + ' ' + f(total + 10);
       var done = L >= total - 1;
       knot.classList.toggle('tied', done);
-      $('hoop').classList.toggle('tied', L >= LR - 1);
+      svg.classList.toggle('lotus-done', L >= LR - 1);
       if (L < 1 || done) { needle.style.opacity = '0'; }
       else {
         var p = mask.getPointAtLength(L), q = mask.getPointAtLength(Math.max(0, L - 3));
