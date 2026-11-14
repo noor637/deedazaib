@@ -81,14 +81,14 @@ body.pv-open{overflow:hidden}
 .shot{position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:center; transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
 .shot::before{content:""; position:absolute; inset:0; background-image:var(--noise); background-size:240px; opacity:.12; mix-blend-mode:multiply}
 .shot svg{position:relative; width:64%; height:auto; margin-bottom:9%}
-.tile:hover .shot,.tile:focus-visible .shot{transform:scale(1.04)}
+.tile:hover .shot,.tile:focus-within .shot{transform:scale(1.04)}
 .tile .cap{position:absolute; left:0; right:0; bottom:0; background:rgba(248,240,230,.95); color:var(--ink); padding:12px 14px; display:flex; justify-content:space-between; align-items:baseline; gap:8px;
   font-size:13px; transform:translateY(100%); transition:transform .45s cubic-bezier(.2,.7,.2,1); text-align:left}
 .tile .cap b{font-family:Cinzel,serif; font-weight:500; letter-spacing:.12em; font-size:12px}
-.tile:hover .cap,.tile:focus-visible .cap{transform:none}
-@media (hover:none){ .tile .cap{display:none} }
+.tile:hover .cap,.tile:focus-within .cap{transform:none}
+@media (hover:none){ .tile .cap{transform:none; flex-direction:column; align-items:flex-start; gap:2px; padding:9px 11px; font-size:11.5px; background:rgba(248,240,230,.92)} .tile .cap b{font-size:10.5px; letter-spacing:.1em} }
 .tile .tag{position:absolute; top:12px; left:12px; z-index:2; font-size:10px; letter-spacing:.2em; padding:4px 8px; background:var(--cream); color:var(--ink)}
-.tile:focus-visible{outline:2px solid var(--ink); outline-offset:-4px}
+.tile-open:focus-visible{outline:2px solid var(--ink); outline-offset:-4px}
 .lb-foot{padding:40px 16px 60px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; color:var(--sub); font-size:14px}
 
 /* product view */
@@ -157,7 +157,7 @@ body.pv-open{overflow:hidden}
 
 /* hover: the second photo fades in */
 .shot img.alt{opacity:0; transition:opacity .6s ease}
-.tile:hover .shot img.alt,.tile:focus-visible .shot img.alt{opacity:1}
+.tile:hover .shot img.alt,.tile:focus-within .shot img.alt{opacity:1}
 @media (hover:none){ .shot img.alt{display:none} }
 .shot img{object-position:center 22%}
 
@@ -236,3 +236,34 @@ section > *{position:relative; z-index:3}
 .hoop.tied .d,.hoop.tied .z{opacity:1; transform:none; filter:none}
 @media (prefers-reduced-motion: reduce){ .hoop .d,.hoop .z{transition:none} }
 
+
+/* ---------- lookbook tiles: open button + favourite heart ---------- */
+.tile-open{position:absolute; inset:0; display:block; width:100%; border:0; padding:0; margin:0; background:none; color:inherit; font:inherit; cursor:pointer; overflow:hidden}
+.fav{position:absolute; top:10px; right:10px; z-index:3; width:40px; height:40px; border-radius:50%; border:0; background:rgba(248,240,230,.88); color:var(--maroon); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(42,9,18,.15); transition:transform .2s ease}
+.fav:hover{transform:scale(1.08)}
+.fav[aria-pressed="true"] svg,.pv-save[aria-pressed="true"] svg{fill:currentColor; animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.3)}100%{transform:scale(1)}}
+.fav:focus-visible,.pv-save:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+.tabs button[hidden]{display:none}
+.pv-save{align-self:flex-start; display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:0; border:0; background:none; color:var(--ink); font-family:inherit; font-size:11px; letter-spacing:.2em; cursor:pointer}
+
+/* favourites bar */
+.favbar{position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:13; display:flex; align-items:center; gap:6px; padding:6px 6px 6px 16px; background:var(--maroon); color:var(--cream); border-radius:999px; box-shadow:0 10px 30px rgba(42,9,18,.35); font-size:13px; white-space:nowrap; animation:barIn .4s cubic-bezier(.2,.7,.2,1)}
+.favbar[hidden]{display:none}
+@keyframes barIn{from{opacity:0; transform:translate(-50%,20px)}to{opacity:1; transform:translate(-50%,0)}}
+.favbar button{background:none; border:0; color:inherit; font:inherit; cursor:pointer; min-height:40px; display:inline-flex; align-items:center; gap:7px}
+.favbar #favList svg{color:var(--champagne)}
+.favsend{background:var(--cream); color:var(--maroon); text-decoration:none; padding:0 16px; height:38px; display:inline-flex; align-items:center; border-radius:999px; font-size:12px; letter-spacing:.08em; margin-left:6px}
+.favclear{width:38px; justify-content:center; opacity:.75}
+body.pv-open .favbar{display:none}
+
+/* zoom into the embroidery */
+.slide{overflow:hidden; cursor:zoom-in}
+.slide img{transition:transform .35s ease}
+.slide.zoomed{cursor:zoom-out}
+.slide.zoomed img{transform:scale(2.6); object-fit:cover}
+.gal.zooming{overflow:hidden; touch-action:none}
+.zoom-hint{position:absolute; left:14px; bottom:14px; z-index:3; display:inline-flex; align-items:center; gap:6px; background:rgba(248,240,230,.92); color:var(--ink); font-size:11px; letter-spacing:.06em; padding:6px 10px; border-radius:999px; pointer-events:none; animation:hintOut 1s ease 4s forwards}
+@keyframes hintOut{to{opacity:0}}
+@media (max-width:860px){ .zoom-hint{bottom:auto; top:14px} }
+@media (prefers-reduced-motion: reduce){ .fav[aria-pressed="true"] svg,.pv-save[aria-pressed="true"] svg,.favbar{animation:none} .slide img{transition:none} }

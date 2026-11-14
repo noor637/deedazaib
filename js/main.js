@@ -2,7 +2,7 @@
    DEEDAZAIB — website behaviour
    You shouldn't need to edit this file: content lives in js/config.js.
    Sections: 1 helpers · 2 WhatsApp links · 3 the gold thread
-             4 lookbook grid · 5 product view
+             4 favourites · 5 lookbook grid · 6 product view
    ========================================================================== */
 (function () {
   'use strict';
@@ -262,16 +262,51 @@
     window.addEventListener('scroll', function () { requestAnimationFrame(markMenu); }, { passive: true });
   }
 
-  /* ---------- 4 · the lookbook grid ---------- */
-  var grid = $('grid');
+  /* ---------- 4 · favourites (saved on this device, sent as one WhatsApp message) ---------- */
+  var HEART = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.3l-1.2-1.1C5.4 14.4 2 11.3 2 7.6 2 4.6 4.4 2.3 7.4 2.3c1.7 0 3.4.8 4.6 2.1 1.2-1.3 2.9-2.1 4.6-2.1 3 0 5.4 2.3 5.4 5.3 0 3.7-3.4 6.8-8.8 11.6z"/></svg>';
+  var FAV_KEY = 'deedazaib-favourites', favs = [];
+  try { favs = JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch (e) { favs = []; }
+  favs = favs.filter(function (no) { return LOOKS.some(function (l) { return l.no === no; }); });
+  function isFav(no) { return favs.indexOf(no) !== -1; }
+  function lookName(l) { return l.name || ('Look ' + l.no); }
+  function toggleFav(no) {
+    if (isFav(no)) favs = favs.filter(function (x) { return x !== no; }); else favs.push(no);
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch (e) { /* private mode: keep for this visit */ }
+    renderFavs();
+  }
+  function renderFavs() {
+    document.querySelectorAll('.fav[data-no]').forEach(function (b) {
+      var on = isFav(b.getAttribute('data-no'));
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    var l = LOOKS[cur];
+    if (l) {
+      var on = isFav(l.no);
+      $('pvFav').setAttribute('aria-pressed', on ? 'true' : 'false');
+      $('pvFavText').textContent = on ? 'SAVED TO FAVOURITES' : 'SAVE TO FAVOURITES';
+    }
+    $('savedTab').hidden = !favs.length;
+    var bar = $('favbar');
+    bar.hidden = !favs.length;
+    $('favCount').textContent = favs.length;
+    $('favWord').textContent = favs.length === 1 ? 'favourite' : 'favourites';
+    var list = LOOKS.filter(function (x) { return isFav(x.no); }).map(function (x) { return '• ' + lookName(x) + ' — Look ' + x.no; });
+    $('favSend').href = waLink('Hi Deedazaib! These are my favourites:\n' + list.join('\n') + '\nCould you tell me more about them?');
+    if (filter === 'saved' && !favs.length) applyFilter('all');
+  }
+
+  /* ---------- 5 · the lookbook grid ---------- */
+  var grid = $('grid'), filter = 'all', cur = 0;
   LOOKS.forEach(function (l, k) {
-    var b = document.createElement('button');
-    b.className = 'tile'; b.setAttribute('data-col', l.collection);
-    b.setAttribute('aria-label', 'Look ' + l.no + ', ' + label(l.collection) + ', ' + priceText(l) + (l.soldOut ? ', sold out' : ''));
+    var t = document.createElement('div');
+    t.className = 'tile'; t.setAttribute('data-col', l.collection);
     var tag = l.soldOut ? '<span class="tag sold">SOLD OUT</span>' : (l.isNew ? '<span class="tag">NEW</span>' : '');
-    b.innerHTML = shot(l) + tag + '<span class="cap"><b>LOOK ' + esc(l.no) + '</b><span>' + esc(priceText(l)) + '</span></span>';
-    b.addEventListener('click', function () { openPV(k); });
-    grid.appendChild(b);
+    t.innerHTML = '<button class="tile-open" aria-label="' + esc(lookName(l) + ', look ' + l.no + ', ' + label(l.collection) + ', ' + priceText(l) + (l.soldOut ? ', sold out' : '')) + '">' +
+      shot(l) + tag + '<span class="cap"><b>' + esc(lookName(l)) + '</b><span>' + esc(priceText(l)) + '</span></span></button>' +
+      '<button class="fav" data-no="' + esc(l.no) + '" aria-pressed="false" aria-label="Save ' + esc(lookName(l)) + ' to favourites">' + HEART + '</button>';
+    t.querySelector('.tile-open').addEventListener('click', function () { openPV(k); });
+    t.querySelector('.fav').addEventListener('click', function (e) { e.stopPropagation(); toggleFav(l.no); });
+    grid.appendChild(t);
   });
   var tiles = [].slice.call(grid.children);
   var io = ('IntersectionObserver' in window) && !REDUCED ? new IntersectionObserver(function (entries) {
@@ -281,27 +316,40 @@
     });
   }, { threshold: 0.15 }) : null;
   tiles.forEach(function (t) { if (io) io.observe(t); else t.classList.add('in'); });
-  document.querySelectorAll('.tabs button').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var f = b.getAttribute('data-filter');
-      document.querySelectorAll('.tabs button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      tiles.forEach(function (t) { t.hidden = !(f === 'all' || t.getAttribute('data-col') === f); t.classList.remove('in'); });
-      tiles.filter(function (t) { return !t.hidden; }).forEach(function (t, k) { setTimeout(function () { t.classList.add('in'); }, 60 + k * 80); });
-      frame();
+  function applyFilter(f) {
+    filter = f;
+    document.querySelectorAll('.tabs button').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-filter') === f ? 'true' : 'false'); });
+    tiles.forEach(function (t, k) {
+      var l = LOOKS[k];
+      t.hidden = !(f === 'all' || (f === 'saved' ? isFav(l.no) : l.collection === f));
+      t.classList.remove('in');
     });
+    tiles.filter(function (t) { return !t.hidden; }).forEach(function (t, k) { setTimeout(function () { t.classList.add('in'); }, 60 + k * 80); });
+    frame();
+  }
+  document.querySelectorAll('.tabs button').forEach(function (b) {
+    b.addEventListener('click', function () { applyFilter(b.getAttribute('data-filter')); });
+  });
+  $('favList').addEventListener('click', function () {
+    applyFilter('saved');
+    $('catalogue').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+  });
+  $('favClear').addEventListener('click', function () {
+    favs = []; try { localStorage.removeItem(FAV_KEY); } catch (e) {}
+    renderFavs();
   });
 
-  /* ---------- 5 · product view ---------- */
-  var pv = $('pv'), pvPhoto = $('pvPhoto'), cur = 0, size = 'M', lastTile = null;
+  /* ---------- 6 · product view ---------- */
+  var pv = $('pv'), pvPhoto = $('pvPhoto'), size = 'M', lastTile = null, pushed = false;
   function setText(id, v) { $(id).textContent = v || ''; }
   function setPV(k) {
     cur = (k + LOOKS.length) % LOOKS.length;
     var l = LOOKS[cur];
-    [].slice.call(pvPhoto.querySelectorAll('.gal, .gal-btn, .gal-count')).forEach(function (n) { n.remove(); });
+    [].slice.call(pvPhoto.querySelectorAll('.gal, .gal-btn, .gal-count, .zoom-hint')).forEach(function (n) { n.remove(); });
     pvPhoto.insertAdjacentHTML('beforeend', gallery(l));
     wireGallery();
     setText('pvKick', label(l.collection).toUpperCase());
-    setText('pvName', l.name ? l.name : 'LOOK ' + l.no);
+    setText('pvName', lookName(l));
     setText('pvCrumb', 'Look ' + l.no);
     setText('pvPrice', priceText(l));
     setText('pvTime', l.makingTime); $('pvTime').parentNode.hidden = !l.makingTime;
@@ -315,21 +363,53 @@
     setText('pvCraft', l.craft); setText('pvFit', l.fit); setText('pvCare', l.care); setText('pvDelivery', C.delivery);
     ['pvCraft', 'pvDetails', 'pvFit', 'pvCare', 'pvDelivery'].forEach(function (id) { $(id).closest('details').hidden = !$(id).textContent.trim(); });
     var pl = LOOKS[(cur - 1 + LOOKS.length) % LOOKS.length], nl = LOOKS[(cur + 1) % LOOKS.length];
-    setText('pvPrevName', pl.name || 'Look ' + pl.no);
-    setText('pvNextName', nl.name || 'Look ' + nl.no);
+    setText('pvPrevName', lookName(pl));
+    setText('pvNextName', lookName(nl));
     updateOrder();
+    renderFavs();
     pv.scrollTop = 0;
   }
+
+  /* gallery: swipe or arrows between photos; tap a photo to zoom into the embroidery */
   function wireGallery() {
     var g = pvPhoto.querySelector('.gal'); if (!g) return;
     var n = g.children.length, count = pvPhoto.querySelector('.gal-count');
+    var zoomed = null;
     function at() { return Math.round(g.scrollLeft / g.clientWidth); }
-    function go(i) { g.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * g.clientWidth, behavior: REDUCED ? 'auto' : 'smooth' }); }
+    function unzoom() {
+      if (!zoomed) return;
+      zoomed.classList.remove('zoomed'); g.classList.remove('zooming'); zoomed = null;
+    }
+    function go(i) { unzoom(); g.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * g.clientWidth, behavior: REDUCED ? 'auto' : 'smooth' }); }
+    function aim(slide, e) {
+      var r = slide.getBoundingClientRect(), img = slide.querySelector('img');
+      var x = Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100));
+      var y = Math.max(0, Math.min(100, (e.clientY - r.top) / r.height * 100));
+      img.style.transformOrigin = x + '% ' + y + '%';
+    }
     g.addEventListener('scroll', function () { if (count) count.textContent = (at() + 1) + ' / ' + n; }, { passive: true });
     var p = pvPhoto.querySelector('.gal-btn.prev'), x = pvPhoto.querySelector('.gal-btn.next');
     if (p) p.addEventListener('click', function () { go(at() - 1); });
     if (x) x.addEventListener('click', function () { go(at() + 1); });
-    g.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') go(at() + 1); if (e.key === 'ArrowLeft') go(at() - 1); });
+    g.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') go(at() + 1);
+      if (e.key === 'ArrowLeft') go(at() - 1);
+      if (e.key === 'Escape' && zoomed) { e.stopPropagation(); unzoom(); }
+    });
+    [].slice.call(g.querySelectorAll('.slide')).forEach(function (slide) {
+      if (!slide.querySelector('img')) return;
+      slide.addEventListener('click', function (e) {
+        if (zoomed === slide) { unzoom(); return; }
+        unzoom(); aim(slide, e);
+        zoomed = slide; slide.classList.add('zoomed'); g.classList.add('zooming');
+        var hint = pvPhoto.querySelector('.zoom-hint'); if (hint) hint.remove();
+      });
+      slide.addEventListener('pointermove', function (e) { if (zoomed === slide) aim(slide, e); });
+    });
+    pv._unzoom = unzoom;
+    if (g.querySelector('.slide img')) {
+      pvPhoto.insertAdjacentHTML('beforeend', '<span class="zoom-hint" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg>Tap the photo to see the embroidery</span>');
+    }
   }
   function updateOrder() {
     var l = LOOKS[cur], what = (l.name ? l.name + ' — ' : '') + 'Look ' + l.no + ' (' + label(l.collection) + ')';
@@ -340,7 +420,7 @@
       $('pvOrder').href = waLink('Hi Deedazaib! I’d like to order ' + what + '. Size: ' + size + (size === 'Custom' ? ' — please take my measurements.' : '.'));
       setText('pvOrderText', 'ORDER ON WHATSAPP');
     }
-    $('pvHelp').href = waLink('Hi Beenish! I need help choosing — I’m looking at Look ' + l.no + '.');
+    $('pvHelp').href = waLink('Hi Beenish! I need help choosing — I’m looking at ' + lookName(l) + ' (Look ' + l.no + ').');
     $('pvSizeNote').style.visibility = size === 'Custom' ? 'visible' : 'hidden';
   }
   document.querySelectorAll('.sz button').forEach(function (b) {
@@ -350,22 +430,55 @@
       updateOrder();
     });
   });
-  function openPV(k) {
-    lastTile = tiles[k]; setPV(k);
+  $('pvFav').addEventListener('click', function () { toggleFav(LOOKS[cur].no); });
+
+  /* every look has its own link (…/#look-02), and the phone's back button closes the look */
+  function hashFor(k) { return '#look-' + LOOKS[k].no; }
+  function lookFromHash() {
+    var m = /^#look-(.+)$/.exec(location.hash || '');
+    if (!m) return -1;
+    for (var k = 0; k < LOOKS.length; k++) if (LOOKS[k].no === decodeURIComponent(m[1])) return k;
+    return -1;
+  }
+  var canHistory = !!(window.history && history.pushState);
+  function openPV(k, fromHistory) {
+    lastTile = tiles[k] && tiles[k].querySelector('.tile-open'); setPV(k);
+    var wasOpen = pv.classList.contains('open');
     pv.classList.add('open'); document.body.classList.add('pv-open');
+    if (canHistory && !fromHistory && !wasOpen) { history.pushState({ pv: cur }, '', hashFor(cur)); pushed = true; }
     $('pvClose').focus({ preventScroll: true });
   }
-  function closePV(silent) {
+  function showLook(k) {                       // previous / next inside the open view
+    setPV(k);
+    if (canHistory) history.replaceState({ pv: cur }, '', hashFor(cur));
+  }
+  function closePV(silent, fromHistory) {
     if (!pv.classList.contains('open')) return;
+    if (pv._unzoom) pv._unzoom();
     pv.classList.remove('open'); document.body.classList.remove('pv-open');
+    if (canHistory && !fromHistory) {
+      if (pushed) { pushed = false; history.back(); }
+      else history.replaceState(null, '', location.pathname + location.search);
+    }
     if (!silent && lastTile) lastTile.focus({ preventScroll: true });
   }
+  window.addEventListener('popstate', function (e) {
+    var k = e.state && typeof e.state.pv === 'number' ? e.state.pv : lookFromHash();
+    if (k >= 0) { openPV(k, true); pushed = true; }
+    else { pushed = false; closePV(false, true); }
+  });
   $('pvClose').addEventListener('click', function () { closePV(); });
   $('pvBack').addEventListener('click', function () { closePV(); });
   $('pvHome').addEventListener('click', function () { closePV(true); window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }); });
-  $('pvPrev').addEventListener('click', function () { setPV(cur - 1); });
-  $('pvNext').addEventListener('click', function () { setPV(cur + 1); });
+  $('pvPrev').addEventListener('click', function () { showLook(cur - 1); });
+  $('pvNext').addEventListener('click', function () { showLook(cur + 1); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pv.classList.contains('open')) closePV(); });
 
+  renderFavs();
+  var start = lookFromHash();                  // opened from a shared link
+  if (start >= 0) {
+    if (canHistory) history.replaceState({ pv: start }, '', hashFor(start));
+    openPV(start, true);
+  }
   frame();
 })();

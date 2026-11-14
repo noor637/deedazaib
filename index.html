@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Gulzar&family=Jost:wght@400;500;600&family=Cormorant+Garamond:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=202611141931">
+  <link rel="stylesheet" href="css/style.css?v=202611141935">
 </head>
 <body>
   <a class="skip" href="#catalogue">Skip to the lookbook</a>
@@ -91,6 +91,7 @@
             <button data-filter="all" aria-pressed="true">ALL</button>
             <button data-filter="semi-formal" aria-pressed="false">SEMI-FORMAL</button>
             <button data-filter="festive" aria-pressed="false">FESTIVE</button>
+            <button data-filter="saved" aria-pressed="false" id="savedTab" hidden>♡ SAVED</button>
           </div>
         </div>
         <div class="grid" id="grid"></div>
@@ -121,6 +122,13 @@
 
   </div>
 
+  <!-- FAVOURITES BAR (appears once a look is saved) -->
+  <div class="favbar" id="favbar" hidden>
+    <button id="favList" aria-label="Show my favourites"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.3l-1.2-1.1C5.4 14.4 2 11.3 2 7.6 2 4.6 4.4 2.3 7.4 2.3c1.7 0 3.4.8 4.6 2.1 1.2-1.3 2.9-2.1 4.6-2.1 3 0 5.4 2.3 5.4 5.3 0 3.7-3.4 6.8-8.8 11.6z"/></svg><span id="favCount">0</span> <span id="favWord">favourites</span></button>
+    <a class="favsend" id="favSend" href="#" target="_blank" rel="noopener">Send on WhatsApp</a>
+    <button class="favclear" id="favClear" aria-label="Clear favourites"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+
   <!-- PRODUCT VIEW (opens when a look is tapped) -->
   <div id="pv" role="dialog" aria-modal="true" aria-label="Look details">
     <div class="pv-wrap">
@@ -132,6 +140,7 @@
         <span class="pv-kick" id="pvKick"></span>
         <h2 class="pv-name" id="pvName"></h2>
         <span class="pv-price" id="pvPrice"></span>
+        <button class="pv-save" id="pvFav" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.3l-1.2-1.1C5.4 14.4 2 11.3 2 7.6 2 4.6 4.4 2.3 7.4 2.3c1.7 0 3.4.8 4.6 2.1 1.2-1.3 2.9-2.1 4.6-2.1 3 0 5.4 2.3 5.4 5.3 0 3.7-3.4 6.8-8.8 11.6z"/></svg><span id="pvFavText">SAVE TO FAVOURITES</span></button>
         <div class="pv-row"><span>MADE TO ORDER</span><span id="pvTime"></span></div>
         <div class="pv-row"><span>FABRIC</span><span id="pvFabric"></span></div>
         <div class="pv-row"><span>SIZE</span>
@@ -152,7 +161,7 @@
     </div>
   </div>
 
-  <script src="js/config.js?v=202611141931"></script>
-  <script src="js/main.js?v=202611141931"></script>
+  <script src="js/config.js?v=202611141935"></script>
+  <script src="js/main.js?v=202611141935"></script>
 </body>
 </html>
