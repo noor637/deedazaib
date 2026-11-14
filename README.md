@@ -64,14 +64,20 @@ instagram: 'https://www.instagram.com/deedazaib',
 ```
 Leave it as `''` and the Instagram button is hidden.
 
-### Adding a photo to a look
-1. On GitHub open the `images/looks` folder → **Add file → Upload files** → upload e.g. `look-01.jpg`.
-2. In `js/config.js` set that look's photo:
+### Photos
+Each look has a `photos:` list. The **first** photo is shown in the lookbook grid, the **second**
+fades in when someone hovers over it, and **all** of them appear in the swipeable gallery when
+the look is opened.
+1. On GitHub open the `images/looks` folder → **Add file → Upload files** → upload e.g. `rose-1.jpg`.
+2. Add it to that look in `js/config.js`:
    ```js
-   photo: 'images/looks/look-01.jpg',
+   photos: [
+     'images/looks/rose-1.jpg',
+     'images/looks/rose-2.jpg'
+   ],
    ```
-Portrait photos work best (about **800 × 1100 px**, under ~300 KB each so the page stays fast).
-File names are case-sensitive: `Look-01.JPG` and `look-01.jpg` are different.
+Resize photos before uploading: about **1100 px wide**, under ~300 KB each, so the site stays fast
+on phones (straight-from-camera photos are 7 MB+). File names are case-sensitive.
 
 ### Editing a look
 Each look is one block in the `looks: [ … ]` list:
@@ -81,11 +87,11 @@ Each look is one block in the `looks: [ … ]` list:
 | `no` | look number shown everywhere (`'07'`) |
 | `collection` | `'semi-formal'` or `'festive'` (controls the tabs) |
 | `isNew` / `soldOut` | `true` shows a **NEW** or **SOLD OUT** tag; sold-out looks ask about restock instead of ordering |
-| `name`, `price` | shown in the product popup (`price: '18,500'` → "Rs 18,500") |
+| `name`, `price` | shown in the product popup (`price: '18,500'` → "Rs 18,500"; `''` → "Price on request") |
 | `fabric`, `makingTime`, `colour` | product details |
 | `shirt`, `dupatta`, `trouser` | the *Product details* section |
 | `craft`, `fit`, `care` | the fold-out sections |
-| `placeholder` | colours of the drawing shown only while there's no photo |
+| any field left `''` | hidden on the site (fabric, makingTime, shirt, dupatta, trouser, fit, care) |
 
 **Add a look:** copy one whole block `{ … },` and paste it under the last one, then change its details.
 **Remove a look:** delete its whole block, including the `{ }` and the comma.

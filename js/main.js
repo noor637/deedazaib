@@ -19,7 +19,7 @@
   }
   function $(id) { return document.getElementById(id); }
   function label(col) { return col === 'festive' ? 'Festive' : 'Semi-Formal'; }
-  function priceText(l) { return 'Rs ' + l.price; }
+  function priceText(l) { return l.price ? 'Rs ' + l.price : 'Price on request'; }
   function waLink(text) {
     var n = String(C.whatsapp || '').replace(/[^0-9]/g, '');
     return 'https://wa.me/' + n + '?text=' + encodeURIComponent(text);
@@ -47,13 +47,30 @@
       '<path d="M120 30 C 150 60, 156 150, 146 230 L 156 232 C 168 150, 160 70, 128 34 Z" fill="' + p.dupatta + '" opacity=".95"/></svg>';
   }
   /* a look's picture: the real photo if there is one, otherwise the illustration */
-  function shot(l) {
+  function photosOf(l) {
+    var list = (l.photos && l.photos.length) ? l.photos : (l.photo ? [l.photo] : []);
+    return list.filter(Boolean);
+  }
+  function alt(l, i) { return (l.name || ('Look ' + l.no)) + (i ? ' — photo ' + (i + 1) : ''); }
+  function shot(l) {             // grid tile: first photo, second photo fades in on hover
     var dark = l.collection === 'festive';
     var bg = dark ? '#5A1F2E' : '#D8C2A2';
-    if (l.photo) {
-      return '<div class="shot has-photo" style="background:' + bg + '"><img src="' + esc(l.photo) + '" alt="Look ' + esc(l.no) + ' — ' + esc(l.name) + '" loading="lazy" decoding="async"></div>';
+    var ph = photosOf(l);
+    if (ph.length) {
+      return '<div class="shot has-photo" style="background:' + bg + '">' +
+        '<img src="' + esc(ph[0]) + '" alt="' + esc(alt(l, 0)) + '" loading="lazy" decoding="async">' +
+        (ph[1] ? '<img class="alt" src="' + esc(ph[1]) + '" alt="" aria-hidden="true" loading="lazy" decoding="async">' : '') + '</div>';
     }
     return '<div class="shot" style="background:' + bg + '">' + dress(l, dark) + '</div>';
+  }
+  function gallery(l) {          // product view: every photo, swipeable
+    var ph = photosOf(l);
+    if (!ph.length) return '<div class="gal"><div class="slide">' + shot(l) + '</div></div>';
+    return '<div class="gal" tabindex="0" aria-label="Photos of ' + esc(l.name || 'this look') + '">' +
+      ph.map(function (src, i) { return '<div class="slide"><img src="' + esc(src) + '" alt="' + esc(alt(l, i)) + '"' + (i ? ' loading="lazy"' : '') + ' decoding="async"></div>'; }).join('') + '</div>' +
+      (ph.length > 1 ? '<button class="gal-btn prev" aria-label="Previous photo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+        '<button class="gal-btn next" aria-label="Next photo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>' +
+        '<span class="gal-count" aria-live="polite">1 / ' + ph.length + '</span>' : '');
   }
 
   /* ---------- 2 · WhatsApp & Instagram links ---------- */
@@ -80,7 +97,7 @@
     '<p class="p-text">I’ve always been an entrepreneur at heart, and Deedazaib grew one step at a time, right from my home.</p></div>' + folio(3));
   var early = C.earlyDaysPhoto
     ? '<div class="mini-photo has-photo"><img src="' + esc(C.earlyDaysPhoto) + '" alt="The early days of Deedazaib"></div>'
-    : '<div class="mini-photo">PHOTO · THE EARLY DAYS</div>';
+    : '';
   add('right', '<div class="pg" style="gap:1.2em;justify-content:center">' + early +
     '<div class="timeline"><div><b>Shawl exhibitions</b><span>Where it all began</span></div><div><b>Unstitched suits</b><span>Our first collections</span></div><div><b>Ready-to-wear · 2022</b><span>Designed by me, made in Islamabad</span></div></div>' +
     '<p class="p-text">My first customers were friends and family. They told their friends, and slowly a whole family of clients grew around us.</p></div>' + folio(4));
@@ -220,26 +237,42 @@
   function setPV(k) {
     cur = (k + LOOKS.length) % LOOKS.length;
     var l = LOOKS[cur];
-    var old = pvPhoto.querySelector('.shot'); if (old) old.remove();
-    pvPhoto.insertAdjacentHTML('beforeend', shot(l));
+    [].slice.call(pvPhoto.querySelectorAll('.gal, .gal-btn, .gal-count')).forEach(function (n) { n.remove(); });
+    pvPhoto.insertAdjacentHTML('beforeend', gallery(l));
+    wireGallery();
     setText('pvKick', label(l.collection).toUpperCase());
-    setText('pvName', 'LOOK ' + l.no + ' · ' + l.name);
+    setText('pvName', l.name ? l.name : 'LOOK ' + l.no);
     setText('pvCrumb', 'Look ' + l.no);
     setText('pvPrice', priceText(l));
-    setText('pvTime', l.makingTime);
-    setText('pvFabric', l.fabric);
-    setText('pvCraft', l.craft);
-    $('pvDetails').innerHTML = 'Colour: ' + esc(l.colour) + '<br>Shirt · ' + esc(l.shirt) + '<br>Dupatta · ' + esc(l.dupatta) + '<br>Trouser · ' + esc(l.trouser);
-    setText('pvFit', l.fit);
-    setText('pvCare', l.care);
-    setText('pvDelivery', C.delivery);
-    setText('pvPrevName', 'Look ' + LOOKS[(cur - 1 + LOOKS.length) % LOOKS.length].no);
-    setText('pvNextName', 'Look ' + LOOKS[(cur + 1) % LOOKS.length].no);
+    setText('pvTime', l.makingTime); $('pvTime').parentNode.hidden = !l.makingTime;
+    setText('pvFabric', l.fabric); $('pvFabric').parentNode.hidden = !l.fabric;
+    var det = [];
+    if (l.colour) det.push('Colour · ' + esc(l.colour));
+    if (l.shirt) det.push('Shirt · ' + esc(l.shirt));
+    if (l.dupatta) det.push('Dupatta · ' + esc(l.dupatta));
+    if (l.trouser) det.push('Trouser · ' + esc(l.trouser));
+    $('pvDetails').innerHTML = det.join('<br>');
+    setText('pvCraft', l.craft); setText('pvFit', l.fit); setText('pvCare', l.care); setText('pvDelivery', C.delivery);
+    ['pvCraft', 'pvDetails', 'pvFit', 'pvCare', 'pvDelivery'].forEach(function (id) { $(id).closest('details').hidden = !$(id).textContent.trim(); });
+    var pl = LOOKS[(cur - 1 + LOOKS.length) % LOOKS.length], nl = LOOKS[(cur + 1) % LOOKS.length];
+    setText('pvPrevName', pl.name || 'Look ' + pl.no);
+    setText('pvNextName', nl.name || 'Look ' + nl.no);
     updateOrder();
     pv.scrollTop = 0;
   }
+  function wireGallery() {
+    var g = pvPhoto.querySelector('.gal'); if (!g) return;
+    var n = g.children.length, count = pvPhoto.querySelector('.gal-count');
+    function at() { return Math.round(g.scrollLeft / g.clientWidth); }
+    function go(i) { g.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * g.clientWidth, behavior: REDUCED ? 'auto' : 'smooth' }); }
+    g.addEventListener('scroll', function () { if (count) count.textContent = (at() + 1) + ' / ' + n; }, { passive: true });
+    var p = pvPhoto.querySelector('.gal-btn.prev'), x = pvPhoto.querySelector('.gal-btn.next');
+    if (p) p.addEventListener('click', function () { go(at() - 1); });
+    if (x) x.addEventListener('click', function () { go(at() + 1); });
+    g.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') go(at() + 1); if (e.key === 'ArrowLeft') go(at() - 1); });
+  }
   function updateOrder() {
-    var l = LOOKS[cur], what = 'Look ' + l.no + ' (' + label(l.collection) + ')';
+    var l = LOOKS[cur], what = (l.name ? l.name + ' — ' : '') + 'Look ' + l.no + ' (' + label(l.collection) + ')';
     if (l.soldOut) {
       $('pvOrder').href = waLink('Hi Deedazaib! Is ' + what + ' coming back? I’d like it in size ' + size + '.');
       setText('pvOrderText', 'SOLD OUT · ASK ON WHATSAPP');
