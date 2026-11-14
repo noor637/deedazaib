@@ -97,7 +97,10 @@
       document.querySelectorAll('.menu a').forEach(function (a) { a.classList.toggle('on', +a.getAttribute('data-sec') === sec); });
     }
   }
-  try {
+  if (!$('thread')) {                                   // the dupatta version has no thread
+    frame = markMenu;
+    window.addEventListener('scroll', function () { requestAnimationFrame(markMenu); }, { passive: true });
+  } else try {
     var NS = 'http://www.w3.org/2000/svg';
     var svg = $('thread'), main = svg.parentNode;
     var mask = $('threadMaskPath'), line = $('threadLine'), shade = $('threadShade'), needle = $('needle');

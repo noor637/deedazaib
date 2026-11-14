@@ -235,3 +235,10 @@ section > *{position:relative; z-index:3}
 .hoop .z{transition-delay:.25s}
 .hoop.tied .d,.hoop.tied .z{opacity:1; transform:none; filter:none}
 @media (prefers-reduced-motion: reduce){ .hoop .d,.hoop .z{transition:none} }
+
+/* ---------- the dupatta version (dupatta.html) ---------- */
+#dupatta{position:fixed; inset:0; z-index:10; pointer-events:none}
+.dupatta-mode .timeline{border-left:1px solid #B08A4A; padding-left:28px; margin-left:4px}
+.dupatta-mode .timeline .t-dot{left:-28px; background:#B08A4A}
+.dupatta-mode .knot{border:2.5px solid var(--champagne); border-radius:50%; position:relative}
+.dupatta-mode .knot::before{content:""; position:absolute; inset:7%; border:1px solid var(--champagne); border-radius:50%}
