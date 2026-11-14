@@ -229,9 +229,3 @@ section > *{position:relative; z-index:3}
   .knot .d{font-size:calc(min(50vw, 220px) * .36)} .knot .z{font-size:calc(min(50vw, 220px) * .27); top:calc(min(50vw, 220px) * .07)}
 }
 
-/* product view: the photo panel is exactly as wide as a 2:3 photo */
-@media (min-width:861px){
-  .pv-wrap{grid-template-columns:calc((100vh - 60px) * 2 / 3) minmax(0,1fr)}
-  .slide img{object-fit:cover; object-position:center}
-  .pv-info{margin:0 auto; width:100%; max-width:600px}
-}
