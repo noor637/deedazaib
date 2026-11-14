@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deedazaib by Beenish — Semi-Formal &amp; Festive Wear</title>
+  <meta name="description" content="Deedazaib by Beenish — semi-formal and festive eastern wear, designed by Beenish and made by karigars in Islamabad. Custom fits, delivered worldwide. Order on WhatsApp.">
+  <meta name="theme-color" content="#3B0D1A">
+  <meta property="og:title" content="Deedazaib by Beenish">
+  <meta property="og:description" content="Semi-formal & festive eastern wear, designed in Islamabad. Order on WhatsApp.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Gulzar&family=Jost:wght@400;500;600&family=Cormorant+Garamond:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#catalogue">Skip to the lookbook</a>
+
+  <header class="topbar">
+    <a class="logo" href="#intro" aria-label="Deedazaib by Beenish, back to top">
+      <span class="logo-row"><span class="logo-en">DEEDA</span><span class="logo-ur" lang="ur" dir="rtl">زیب</span></span>
+      <span class="logo-by">BY BEENISH</span>
+    </a>
+    <nav class="menu" aria-label="Sections">
+      <a href="#story" data-sec="1">OUR STORY</a>
+      <a href="#catalogue" data-sec="2">LOOKBOOK</a>
+      <a href="#about" data-sec="3">ABOUT</a>
+    </nav>
+  </header>
+
+  <div id="home">
+    <main>
+      <!-- 1 · INTRO -->
+      <section id="intro" data-sec="0">
+        <div class="intro-text">
+          <span class="kicker">SEMI-FORMAL &amp; FESTIVE WEAR · ISLAMABAD</span>
+          <h1 class="big"><span class="en">DEEDA</span><span class="ur" lang="ur" dir="rtl">زیب</span></h1>
+          <span class="by">BY BEENISH</span>
+          <div style="color:#B08A4A"><div class="orn" aria-hidden="true"><i></i><b></b><i></i></div></div>
+          <p>Eastern wear, pleasing to the eye. Designed by Beenish, made by karigars in Islamabad, and delivered worldwide.</p>
+          <div class="ctas">
+            <a class="btn solid" href="#catalogue">See the lookbook</a>
+            <a class="btn line" data-wa="Hi Deedazaib! I would like to order." href="#" target="_blank" rel="noopener">Order on WhatsApp</a>
+          </div>
+          <div class="scroll-cue" aria-hidden="true"><span></span>SCROLL — THE BOOK WILL OPEN</div>
+        </div>
+      </section>
+
+      <!-- 2 · HOW WE STARTED (the story itself is printed inside the book, see js/main.js) -->
+      <section id="story" data-sec="1">
+        <div class="head"><span class="kicker">CHAPTER ZERO</span><h2>HOW WE STARTED</h2></div>
+      </section>
+
+      <!-- 3 · THE LOOKBOOK (looks come from js/config.js) -->
+      <section id="catalogue" data-sec="2">
+        <div class="lb-head">
+          <span class="kicker">SEMI-FORMAL &amp; FESTIVE · 2026</span>
+          <h2>THE LOOKBOOK</h2>
+          <div class="tabs" role="group" aria-label="Collection">
+            <button data-filter="all" aria-pressed="true">ALL</button>
+            <button data-filter="semi-formal" aria-pressed="false">SEMI-FORMAL</button>
+            <button data-filter="festive" aria-pressed="false">FESTIVE</button>
+          </div>
+        </div>
+        <div class="grid" id="grid"></div>
+        <div class="lb-foot">
+          <span>Can’t find your size or colour? We make every piece to order.</span>
+          <a class="btn solid" data-wa="Hi Deedazaib! I have a question about the lookbook." href="#" target="_blank" rel="noopener">Chat with us on WhatsApp</a>
+        </div>
+      </section>
+
+      <!-- 4 · ABOUT US -->
+      <section id="about" data-sec="3">
+        <div class="about-text">
+          <span class="kicker">DEEDAZAIB BY BEENISH</span>
+          <h2>ABOUT US</h2>
+          <span class="ur-big" lang="ur" dir="rtl">دیدہ زیب</span>
+          <div class="meaning"><span><em>deeda</em> · sight</span><span><em>zaib</em> · adornment</span></div>
+          <p>Our name means <b style="color:var(--cream);font-weight:500">pleasing to the eye</b>. Every design is created and styled by Beenish and brought to life by skilled karigars in Islamabad. Fabric comes first, every piece can be made to your measurements, and we deliver worldwide.</p>
+          <span class="sign"><span lang="ur" dir="rtl">ہر جوڑا، آپ کے لیے</span> · Every outfit, made for you.</span>
+          <div class="ctas">
+            <a class="btn cream" data-wa="Hi Deedazaib! I have a question." href="#" target="_blank" rel="noopener">Chat with us on WhatsApp</a>
+            <a class="btn gold" id="instagram" href="#" target="_blank" rel="noopener">Instagram</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="foot">© <span id="year">2026</span> DEEDAZAIB BY BEENISH · ISLAMABAD</footer>
+
+    <!-- the travelling book -->
+    <div id="bookLayer"><div id="mover"><div id="book" aria-label="The Deedazaib book"></div></div></div>
+  </div>
+
+  <!-- PRODUCT VIEW (opens when a look is tapped) -->
+  <div id="pv" role="dialog" aria-modal="true" aria-label="Look details">
+    <div class="pv-wrap">
+      <div class="pv-photo" id="pvPhoto">
+        <button class="pv-close" id="pvClose" aria-label="Back to the lookbook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="pv-info">
+        <nav class="crumbs" aria-label="Breadcrumb"><button id="pvHome">Home</button><span aria-hidden="true">/</span><button id="pvBack">Lookbook</button><span aria-hidden="true">/</span><span id="pvCrumb"></span></nav>
+        <span class="pv-kick" id="pvKick"></span>
+        <h2 class="pv-name" id="pvName"></h2>
+        <span class="pv-price" id="pvPrice"></span>
+        <div class="pv-row"><span>MADE TO ORDER</span><span id="pvTime"></span></div>
+        <div class="pv-row"><span>FABRIC</span><span id="pvFabric"></span></div>
+        <div class="pv-row"><span>SIZE</span>
+          <div class="sz" role="group" aria-label="Size"><button aria-pressed="false">S</button><button aria-pressed="true">M</button><button aria-pressed="false">L</button><button aria-pressed="false">Custom</button></div>
+        </div>
+        <p class="pv-note" id="pvSizeNote">Custom? We’ll take your measurements on WhatsApp.</p>
+        <a class="pv-order" id="pvOrder" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg><span id="pvOrderText">ORDER ON WHATSAPP</span></a>
+        <span class="pv-help">Need help choosing? <a id="pvHelp" href="#" target="_blank" rel="noopener">Chat with Beenish</a></span>
+        <div class="acc">
+          <details open><summary>CRAFT DETAILS</summary><p id="pvCraft"></p></details>
+          <details><summary>PRODUCT DETAILS</summary><p id="pvDetails"></p></details>
+          <details><summary>MODEL &amp; FIT</summary><p id="pvFit"></p></details>
+          <details><summary>CARE</summary><p id="pvCare"></p></details>
+          <details><summary>DELIVERY</summary><p id="pvDelivery"></p></details>
+        </div>
+        <div class="pv-nav"><button id="pvPrev"><small>‹ PREVIOUS</small><span id="pvPrevName"></span></button><button id="pvNext"><small>NEXT ›</small><span id="pvNextName"></span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/vendor/page-flip.browser.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
